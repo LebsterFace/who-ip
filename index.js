@@ -44,11 +44,13 @@ for (let i = 0; i < argv.length; i++) {
 //#region Validate flags
 
 //#endregion
+//#region Basic flags
 if (options.flags.version) {
 	console.log("GeoIP v1.0.0");
-	process.exit(1);
+	process.exit();
 } else if (options.flags.help) {
 	console.log("Usage: geoip <IP address> [-help] [-version] [-format=...]");
 	console.log("Acceptable values for -format: json, pretty");
-	process.exit(1);
+	process.exit();
 }
+//#endregion
