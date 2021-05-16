@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 "use strict";
 /* jshint node: true */
 //#region Setup
@@ -150,10 +152,6 @@ if (typeof options.flags.format !== "undefined") {
 } else {
 	options.flags.format = "pretty";
 }
-
-if (options.ip.length === 0) {
-	fail("Please specify at least one IP address");
-}
 //#endregion
 //#region Basic flags
 if (options.flags.version) {
@@ -163,6 +161,8 @@ if (options.flags.version) {
 	console.log("Usage: whoip <IP address> [-help] [-version] [-format=...]");
 	console.log(`Acceptable values for -format: ${Object.keys(formatters).join(", ")}`);
 	process.exit();
+} else if (options.ip.length === 0) {
+	fail("Please specify at least one IP address");
 }
 //#endregion
 //#region Main

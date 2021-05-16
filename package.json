@@ -3,9 +3,7 @@
 	"version": "1.0.1",
 	"description": "CLI for getting information about IP addresses",
 	"main": "index.js",
-	"bin": {
-		"whoip": "index.js"
-	},
+	"bin": { "whoip": "node index.js" },
 	"keywords": [
 		"ip",
 		"ip-address",
