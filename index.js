@@ -1,11 +1,12 @@
 const fs = require("fs"),
+	fetch = require("node-fetch"),
 	colors = require("colors/safe");
 
 const flag = iso => String.fromCodePoint(...[...iso.toUpperCase()].map(char => char.charCodeAt(0) + 0x1f1a5)),
 	get = ip => fetch(`http://ip-api.com/json/${ip}?fields=62638079`).then(r => r.json()),
 	ipRegex = /^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}(?:\:(?:\d{1,4}|[1-6](?:[0-4]\d{3}|5[0-4]\d{2}|55[0-2]\d|553[0-5])))?$/;
 
-const fail = (msg, detail=null) => {
+const fail = (msg, detail = null) => {
 	console.log(colors.bgRed.white("ERROR: " + msg));
 	if (detail !== null) console.log(detail);
 	process.exit(0);
@@ -20,14 +21,14 @@ const argv = process.argv.slice(2);
 const options = {ip: [], flags: {}};
 
 const flagNames = {
-	"-h":      "help",
-	"-help":   "help",
-	"?":       "help",
-	help:      "help",
-	v:         "version",
-	version:   "version",
-	format:    "format",
-	f:         "format",
+	"-h": "help",
+	"-help": "help",
+	"?": "help",
+	help: "help",
+	v: "version",
+	version: "version",
+	format: "format",
+	f: "format",
 	"-format": "format"
 };
 
@@ -46,15 +47,21 @@ for (let i = 0; i < argv.length; i++) {
 	}
 }
 //#endregion
-//#region Validate flags
+//#region Validate arguments
 if (typeof options.flags.format !== "undefined") {
 	if (typeof options.flags.format === "string") {
 		if (!(options.flags.format in formatters)) {
 			fail(`Unrecognized format type '${options.flags.format}'`, `Try one of: ${Object.keys(formatters).join(", ")}`);
 		}
 	} else {
-		fail(`Format type not specified`);
+		fail("Format type not specified");
 	}
+} else {
+	options.flags.format = "json";
+}
+
+if (options.ip.length === 0) {
+	fail("Please specify at least one IP address");
 }
 //#endregion
 //#region Basic flags
@@ -67,3 +74,10 @@ if (options.flags.version) {
 	process.exit();
 }
 //#endregion
+
+(async () => {
+	const responses = await Promise.all(options.ip.map(get));
+	for (const response of responses) {
+		console.log(response);
+	}
+})();
