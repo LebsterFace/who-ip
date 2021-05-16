@@ -1,17 +1,14 @@
 {
-  "name": "geoip",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "cli-table": "^0.3.6",
-    "colors": "^1.4.0",
-    "node-fetch": "^2.6.1"
-  }
+	"name": "who-ip",
+	"version": "1.0.0",
+	"description": "CLI for getting information about IP addresses",
+	"main": "index.js",
+	"keywords": ["ip", "ip-address", "whois", "cli"],
+	"author": "Lebster",
+	"license": "MIT",
+	"dependencies": {
+		"cli-table": "^0.3.6",
+		"colors": "^1.4.0",
+		"node-fetch": "^2.6.1"
+	}
 }

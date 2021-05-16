@@ -86,7 +86,7 @@ const formatters = {
 		const offsetMS = new Date() - new Date(new Date().toLocaleString("en-US", {timeZone: obj.timezone}));
 		const offsetHours = (offsetMS / 3600000).toFixed(1).replace(/\.?0+$/, "");
 		table.push({Timezone: obj.timezone});
-		table.push({Offset: offsetHours + " hours behind"});
+		table.push({Offset: `${offsetHours} hour${offsetHours === "1" ? "" : "s"} behind`});
 		if (offsetHours !== "0") {
 			table.push({Time: new Date().toLocaleString("en-US", {
 				dateStyle: "long",
@@ -157,10 +157,10 @@ if (options.ip.length === 0) {
 //#endregion
 //#region Basic flags
 if (options.flags.version) {
-	console.log("GeoIP v1.0.0");
+	console.log("WhoIP v1.0.0");
 	process.exit();
 } else if (options.flags.help) {
-	console.log("Usage: geoip <IP address> [-help] [-version] [-format=...]");
+	console.log("Usage: whoip <IP address> [-help] [-version] [-format=...]");
 	console.log(`Acceptable values for -format: ${Object.keys(formatters).join(", ")}`);
 	process.exit();
 }
