@@ -13,25 +13,42 @@ const fail = msg => {
 //#region Parse arguments
 const argv = process.argv.slice(2);
 const options = {ip: [], flags: {}};
-const validFlags = new Set("help", "h", "-help", "v", "version", "format");
+
+const flagNames = {
+	"-h":      "help",
+	"-help":   "help",
+	"?":       "help",
+	help:      "help",
+	v:         "version",
+	version:   "version",
+	format:    "format",
+	f:         "format",
+	"-format": "format"
+};
 
 for (let i = 0; i < argv.length; i++) {
 	const arg = argv[i];
 	if (arg.indexOf("-") === 0) {
 		const equalsPos = arg.indexOf("=");
 		const flagName = (equalsPos === -1 ? arg.slice(1) : arg.slice(1, equalsPos)).toLowerCase();
-		if (!validFlags.has(flagName)) fail(`Unrecognized flag ${flagName}`);
+		if (!(flagName in flagNames)) fail(`Unrecognized flag ${flagName}`);
 		const flagValue = equalsPos === -1 ? true : arg.slice(equalsPos + 1);
-		options[flagName] = flagValue;
+		options[flagNames[flagName]] = flagValue;
 	} else if (ipRegex.test(arg)) {
 		options.ip.push(arg);
 	} else {
 		fail(`Invalid IP '${arg}'`);
 	}
 }
-
-if (typeof options.flags.format !== "string") {
-	fail(`Format must be one of ${colors.gray("json, newline, csv, pretty")}`);
-}
+//#endregion
+//#region Validate flags
 
 //#endregion
+if (options.flags.version) {
+	console.log("GeoIP v1.0.0");
+	process.exit(1);
+} else if (options.flags.help) {
+	console.log("Usage: geoip <IP address> [-help] [-version] [-format=...]");
+	console.log("Acceptable values for -format: json, pretty");
+	process.exit(1);
+}
