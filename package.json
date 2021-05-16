@@ -3,9 +3,11 @@
 	"version": "1.0.0",
 	"description": "CLI for getting information about IP addresses",
 	"main": "index.js",
+	"bin": { "whoip": "index.js" },
 	"keywords": ["ip", "ip-address", "whois", "cli"],
 	"author": "Lebster",
 	"license": "MIT",
+	"repository": "github:LebsterFace/who-ip",
 	"dependencies": {
 		"cli-table": "^0.3.6",
 		"colors": "^1.4.0",
