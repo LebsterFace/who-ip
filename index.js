@@ -1,12 +1,11 @@
 "use strict";
 /* jshint node: true */
 //#region Setup
-const fs = require("fs"),
-	fetch = require("node-fetch"),
-	colors = require("colors/safe");
+const fetch = require("node-fetch"),
+	colors = require("colors/safe"),
+	cliTable = require("cli-table");
 
-const flag = iso => String.fromCodePoint(...[...iso.toUpperCase()].map(char => char.charCodeAt(0) + 0x1f1a5)),
-	get = ip => fetch(`http://ip-api.com/json/${ip}?fields=60549115`).then(r => r.json()),
+const get = ip => fetch(`http://ip-api.com/json/${ip}?fields=60549115`).then(r => r.json()),
 	ipRegex = /^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}(?:\:(?:\d{1,4}|[1-6](?:[0-4]\d{3}|5[0-4]\d{2}|55[0-2]\d|553[0-5])))?$/;
 
 const fail = (msg, detail = null) => {
@@ -43,9 +42,62 @@ const fail = (msg, detail = null) => {
 //#endregion
 //#region Formatters
 
+const explain = {
+	"private range": "IP is in the private range",
+	"reserved range": "IP is in the reserved range",
+	"invalid query": "Ivalid IP Address"
+};
+
 const formatters = {
 	/** @param {APIResponse} obj */
-	json: obj => JSON.stringify(obj, undefined, "\t")
+	json: obj => JSON.stringify(obj, undefined, "\t"),
+	
+	/** @param {APIResponse} obj */
+	pretty: obj => {
+		if (obj.status === "fail") {
+			return colors.red(`Failed to locate '${obj.query}': ${explain[obj.message]}`);
+		}
+
+		const table = new cliTable({
+			head: [colors.yellow("Field Name"), colors.yellow("Value")]
+		});
+		
+		let ip_type = "Normal";
+		if (obj.proxy) ip_type = "Proxy";
+		if (obj.mobile) ip_type = "Mobile";
+		if (obj.hosting) ip_type = "Hosting"; // TODO: Support HTTP(S) URLs
+
+		table.push({City: obj.city});
+		if (obj.district !== "") table.push({District: obj.district});
+		table.push({Region: obj.regionName});
+
+		table.push({Country: `${obj.country} (${obj.countryCode})`});
+		table.push({Continent: obj.continent});
+
+		table.push({Latitude: obj.lat});
+		table.push({Longitude: obj.lon});
+
+		const offsetMS = new Date() - new Date(new Date().toLocaleString("en-US", {timeZone: obj.timezone}));
+		const offsetHours = (offsetMS / 3600000).toFixed(1).replace(/\.?0+$/, "");
+		table.push({Timezone: obj.timezone});
+		table.push({Offset: offsetHours + " hours behind"});
+		if (offsetHours !== "0") {
+			table.push({Time: new Date().toLocaleString("en-US", {
+				dateStyle: "long",
+				timeStyle: "short",
+				timeZone: obj.timezone
+			})});
+		}
+		
+		table.push({Currency: obj.currency});
+		table.push({"":""});
+		table.push({ISP: obj.isp});
+		table.push({"IP Type": ip_type});
+		if (obj.org !== "") table.push({Organization: obj.org});
+		
+
+		return table.toString();
+	}
 };
 
 //#endregion
@@ -90,7 +142,7 @@ if (typeof options.flags.format !== "undefined") {
 		fail("Format type not specified");
 	}
 } else {
-	options.flags.format = "json";
+	options.flags.format = "pretty";
 }
 
 if (options.ip.length === 0) {
