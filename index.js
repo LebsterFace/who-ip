@@ -3,7 +3,8 @@
 //#region Setup
 const fetch = require("node-fetch"),
 	colors = require("colors/safe"),
-	cliTable = require("cli-table");
+	cliTable = require("cli-table"),
+	{inspect} = require("util");
 
 const get = ip => fetch(`http://ip-api.com/json/${ip}?fields=60549115`).then(r => r.json()),
 	ipRegex = /^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}(?:\:(?:\d{1,4}|[1-6](?:[0-4]\d{3}|5[0-4]\d{2}|55[0-2]\d|553[0-5])))?$/;
@@ -50,7 +51,11 @@ const explain = {
 
 const formatters = {
 	/** @param {APIResponse} obj */
-	json: obj => JSON.stringify(obj, undefined, "\t"),
+	json: obj => inspect(obj, {depth: Infinity, colors: true}),
+	/** @param {APIResponse} obj */
+	csv: obj => Object.keys(obj).join(",")+"\n"+Object.values(obj).join(","),
+	/** @param {APIResponse} obj */
+	newline: obj => Object.entries(obj).map(([key, value]) => `${key}: ${value}`).join("\n"),
 	
 	/** @param {APIResponse} obj */
 	pretty: obj => {
@@ -70,6 +75,7 @@ const formatters = {
 		table.push({City: obj.city});
 		if (obj.district !== "") table.push({District: obj.district});
 		table.push({Region: obj.regionName});
+		table.push({"ZIP Code": obj.zip});
 
 		table.push({Country: `${obj.country} (${obj.countryCode})`});
 		table.push({Continent: obj.continent});
