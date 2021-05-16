@@ -5,9 +5,14 @@ const flag = iso => String.fromCodePoint(...[...iso.toUpperCase()].map(char => c
 	get = ip => fetch(`http://ip-api.com/json/${ip}?fields=62638079`).then(r => r.json()),
 	ipRegex = /^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}(?:\:(?:\d{1,4}|[1-6](?:[0-4]\d{3}|5[0-4]\d{2}|55[0-2]\d|553[0-5])))?$/;
 
-const fail = msg => {
+const fail = (msg, detail=null) => {
 	console.log(colors.bgRed.white("ERROR: " + msg));
+	if (detail !== null) console.log(detail);
 	process.exit(0);
+};
+
+const formatters = {
+	json: obj => JSON.stringify(obj, undefined, "\t")
 };
 
 //#region Parse arguments
@@ -33,7 +38,7 @@ for (let i = 0; i < argv.length; i++) {
 		const flagName = (equalsPos === -1 ? arg.slice(1) : arg.slice(1, equalsPos)).toLowerCase();
 		if (!(flagName in flagNames)) fail(`Unrecognized flag ${flagName}`);
 		const flagValue = equalsPos === -1 ? true : arg.slice(equalsPos + 1);
-		options[flagNames[flagName]] = flagValue;
+		options.flags[flagNames[flagName]] = flagValue;
 	} else if (ipRegex.test(arg)) {
 		options.ip.push(arg);
 	} else {
@@ -42,7 +47,15 @@ for (let i = 0; i < argv.length; i++) {
 }
 //#endregion
 //#region Validate flags
-
+if (typeof options.flags.format !== "undefined") {
+	if (typeof options.flags.format === "string") {
+		if (!(options.flags.format in formatters)) {
+			fail(`Unrecognized format type '${options.flags.format}'`, `Try one of: ${Object.keys(formatters).join(", ")}`);
+		}
+	} else {
+		fail(`Format type not specified`);
+	}
+}
 //#endregion
 //#region Basic flags
 if (options.flags.version) {
@@ -50,7 +63,7 @@ if (options.flags.version) {
 	process.exit();
 } else if (options.flags.help) {
 	console.log("Usage: geoip <IP address> [-help] [-version] [-format=...]");
-	console.log("Acceptable values for -format: json, pretty");
+	console.log(`Acceptable values for -format: ${Object.keys(formatters).join(", ")}`);
 	process.exit();
 }
 //#endregion
