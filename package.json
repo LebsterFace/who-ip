@@ -1,10 +1,10 @@
 {
 	"name": "who-ip",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "CLI for getting information about IP addresses",
 	"main": "index.js",
 	"bin": {
-		"whoip": "node index.js"
+		"whoip": "index.js"
 	},
 	"keywords": [
 		"ip",
