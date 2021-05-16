@@ -1,10 +1,17 @@
 {
 	"name": "who-ip",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "CLI for getting information about IP addresses",
 	"main": "index.js",
-	"bin": { "whoip": "index.js" },
-	"keywords": ["ip", "ip-address", "whois", "cli"],
+	"bin": {
+		"whoip": "index.js"
+	},
+	"keywords": [
+		"ip",
+		"ip-address",
+		"whois",
+		"cli"
+	],
 	"author": "Lebster",
 	"license": "MIT",
 	"repository": "github:LebsterFace/who-ip",
