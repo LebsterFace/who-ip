@@ -118,6 +118,7 @@ const flagNames = {
 	"-help": "help",
 	"?": "help",
 	help: "help",
+	h: "help",
 	v: "version",
 	version: "version",
 	format: "format",
