@@ -1,5 +1,7 @@
 # who-ip
 **A CLI for getting information about IP addresses!**
+![Demonstration GIF](demo.gif)
+
 ## Usage
     whoip <IP address> [-help] [-version] [-format=...]
 
