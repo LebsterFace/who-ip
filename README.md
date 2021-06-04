@@ -2,6 +2,9 @@
 **A CLI for getting information about IP addresses!**
 ![Demonstration GIF](demo.gif)
 
+## Installation
+    npm install -g who-ip
+
 ## Usage
     whoip <IP address> [-help] [-version] [-format=...]
 
